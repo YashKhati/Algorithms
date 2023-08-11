@@ -1,17 +1,25 @@
 #include <iostream>
 #include <vector>
 using namespace std;
-void dfs(vector<int> adj[], vector<bool> &vis, int node)
+bool dfs(vector<int> adj[], vector<bool> &vis, vector<bool> &pathvis, int node)
 {
     vis[node] = true;
-    cout << node << " ";
+    pathvis[node] = true;
+
     for (auto it : adj[node])
     {
-        if (vis[it] != true)
+        if (!vis[it])
         {
-            dfs(adj, vis, it);
+            if (dfs(adj, vis, pathvis, it) == true)
+                return true;
+        }
+        else if (pathvis[it])
+        {
+            return true;
         }
     }
+    pathvis[node] = false;
+    return false;
 }
 int main()
 {
@@ -44,11 +52,17 @@ int main()
     }
 
     vector<bool> vis(N, false);
+    vector<bool> pathvis(N, false);
     for (int i = 0; i < N; i++)
     {
         if (vis[i] == false)
         {
-            dfs(adj, vis, i);
+            if (dfs(adj, vis, pathvis, i) == true)
+            {
+                cout << "Cycle Exist ";
+                return 0;
+            }
         }
     }
+    cout << "Cycle Does Not Exist ";
 }
